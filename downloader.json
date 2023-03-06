@@ -1,0 +1,6 @@
+{
+  "remoteHost" : "servername",
+  "remoteUser" : "user",
+  "remoteAndroid" : "/remote/android/path/",
+  "remoteIos" : "/remote/ios/path/"
+}

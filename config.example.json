@@ -1,0 +1,250 @@
+{
+  "downloaderConfig" : "./downloader.json",
+  "maxAmountApps" : 10,
+  "downloadFolderRoot" : "/path/to/folder/",
+  "ios" : {
+    "categories" : [
+      {
+        "name": "Business",
+        "id": "6000"
+      },
+      {
+        "name": "Weather",
+        "id" : "6001"
+      },
+      {
+        "name": "Utilities",
+        "id": "6002"
+      },
+      {
+        "name": "Travel",
+        "id": "6003"
+      },
+      {
+        "name": "Sports",
+        "id": "6004"
+      },
+      {
+        "name": "Social Networking",
+        "id": "6005"
+      },
+      {
+        "name": "Reference",
+        "id": "6006"
+      },
+      {
+        "name": "Productivity",
+        "id": "6007"
+      },
+      {
+        "name": "Photo & Video",
+        "id": "6008"
+      },
+      {
+        "name": "News",
+        "id": "6009"
+      },
+      {
+        "name": "Navigation",
+        "id": "6010"
+      },
+      {
+        "name": "Music",
+        "id": "6011"
+      },
+      {
+        "name": "Lifestyle",
+        "id": "6012"
+      },
+      {
+        "name": "Health & Fitness",
+        "id": "6013"
+      },
+      {
+        "name": "Games",
+        "id": "6014"
+      },
+      {
+        "name": "Finance",
+        "id": "6015"
+      },
+      {
+        "name": "Entertainment",
+        "id": "6016"
+      },
+      {
+        "name": "Education",
+        "id": "6017"
+      },
+      {
+        "name": "Books",
+        "id": "6018"
+      },
+      {
+        "name": "Medical",
+        "id": "6020"
+      },
+      {
+        "name": "Magazines & Newspapers",
+        "id": "6021"
+      },
+      {
+        "name": "Catalogs",
+        "id": "6022"
+      },
+      {
+        "name": "Food & Drink",
+        "id": "6023"
+      },
+      {
+        "name": "Shopping",
+        "id": "6024"
+      },
+      {
+        "name": "Developer Tools",
+        "id": "6026"
+      },
+      {
+        "name": "Graphics & Design",
+        "id": "6027"
+      }
+    ],
+    "login": {
+      "email": "username",
+      "password": "password",
+      "twoFA": "2FA Code"
+    },
+    "ipatoolpy": "/path/to/ipatool-py/main.py",
+    "osFolderName" : "ios"
+  },
+  "android" : {
+    "categories" : [
+      {
+      "name" : "Education",
+      "id" : "EDUCATION"
+    },{
+      "name" : "Applications",
+      "id"  : "APPLICATION"
+    },{
+      "name" : "Games",
+      "id" : "GAME"
+    },{
+      "id" : "ART_AND_DESIGN",
+      "name" : "Art & Design"
+    },{
+      "id"  : "AUTO_AND_VEHICLES",
+      "name" : " Auto & Vehicles"
+    },{
+      "id"  : "BEAUTY",
+      "name" : "Beauty"
+    },{
+      "id"  : "BOOKS_AND_REFERENCE",
+      "name": "Books & Reference"
+    },{
+      "id"  : "BUSINESS",
+      "name" : "Business"
+    },{
+      "id"  : "COMICS",
+      "name" : "Comics"
+    },{
+      "id"  : "COMMUNICATION",
+      "name" : "Communication"
+    },{
+      "id"  : "DATING",
+      "name" : "Dating"
+    },{
+      "id"  : "EDUCATION",
+      "name" : "Education"
+    },{
+      "id"  : "ENTERTAINMENT",
+      "name" : "Entertainment"
+    },{
+      "id"  : "EVENTS",
+      "name" : "Events"
+    },{
+      "id"  : "FINANCE",
+      "name" : "Finance"
+    },{
+      "id"  : "FOOD_AND_DRINK",
+      "name" : "Food & Drink"
+    },{
+      "id"  : "HEALTH_AND_FITNESS",
+      "name" : "Health & Fitness"
+    },{
+      "id"  : "HOUSE_AND_HOME",
+      "name" : "House & Home"
+    },{
+      "id"  : "LIBRARIES_AND_DEMO",
+      "name" : "Libraries & Demo"
+    },{
+      "id"  : "LIFESTYLE",
+      "name" : "Lifestyle"
+    },{
+      "id"  : "MAPS_AND_NAVIGATION",
+      "name" : "Maps & Navigation"
+    },{
+      "id"  : "MEDICAL",
+      "name" : "Medical"
+    },{
+      "id"  : "MUSIC_AND_AUDIO",
+      "name" : "Music & Audio"
+    },{
+      "id"  : "NEWS_AND_MAGAZINES",
+      "name" : "News & Magazines"
+    },{
+      "id"  : "PARENTING",
+      "name" : "Parenting"
+    },{
+      "id"  : "PERSONALIZATION",
+      "name" : "Personalization"
+    },{
+      "id"  : "PHOTOGRAPHY",
+      "name" : "Photography"
+    },{
+      "id"  : "PRODUCTIVITY",
+      "name" : "Productivity"
+    },{
+      "id"  : "SHOPPING",
+      "name" : "Shopping"
+    },{
+      "id"  : "SOCIAL",
+      "name" : "Social"
+    },{
+      "id"  : "SPORTS",
+      "name" : "Sports"
+    },{
+      "id"  : "TOOLS",
+      "name" : "Tools"
+    },{
+      "id"  : "TRAVEL_AND_LOCAL",
+      "name" : "Travel & Local"
+    },{
+      "id"  : "VIDEO_PLAYERS",
+      "name" : "Video Players & Editors"
+    },{
+      "id"  : "ANDROID_WEAR",
+      "name" : "Watch apps"
+    },{
+      "id"  : "WATCH_FACE",
+      "name" : "Watch faces"
+    },{
+      "id"  : "WEATHER",
+      "name" : "Weather"
+    },{
+      "id"  : "FAMILY",
+      "name" : "Kids"
+    }],
+    "login" : {
+      "email" : "username",
+      "password" : "password",
+      "twoFA" : "N/A"
+    },
+    "googleplay" : "/path/to/googleplay/cmd/googleplay/googleplay",
+    "osFolderName" : "android"
+  },
+  "telegram" : {
+    "enable" : true,
+    "apiKey" : "KEY",
+    "chatId" : "CHATID"
+  }
+}
