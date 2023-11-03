@@ -19,7 +19,7 @@ object LabelAction extends LogSupport {
                folder: String,
                os: OperatingSystem): ActionReport = {
     val bar =
-      AsciiProgressBar.create("Downloading Labels ", appIds.length.toLong)
+      AsciiProgressBar.create("Downloading Labels ", appIds.toSet.size.toLong)
     val failures = MMap[String, String]()
     try {
       appIds.toSet.foreach { id : String =>

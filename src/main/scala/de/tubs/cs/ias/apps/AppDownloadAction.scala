@@ -15,7 +15,7 @@ object AppDownloadAction extends LogSupport {
                conf: Config,
                os: OperatingSystem): ActionReport = {
     val bar =
-      AsciiProgressBar.create("Downloading Apps  ", appIds.length.toLong)
+      AsciiProgressBar.create("Downloading Apps  ", appIds.toSet.size.toLong)
     val failures = MMap[String, String]()
     try {
       val appNames = new File(folder)
