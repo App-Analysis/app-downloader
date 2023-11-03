@@ -33,14 +33,12 @@ object Apmi extends LogSupport {
       val pargs = parser.parse(args)
       val config = Config.read(pargs.getValue[String]("config"))
       try {
-        if (config.telegram.enable) {
-        }
+        if (config.telegram.enable) {}
         pargs
           .getValue[(ParsingResult, Config) => Unit]("func")
           .apply(pargs, config)
       } finally {
-        if (config.telegram.enable) {
-        }
+        if (config.telegram.enable) {}
       }
     } catch {
       case _: ParsingException =>
