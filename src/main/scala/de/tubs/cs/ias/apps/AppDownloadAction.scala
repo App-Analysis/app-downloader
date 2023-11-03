@@ -23,7 +23,7 @@ object AppDownloadAction extends LogSupport {
         .filter(_.isFile)
         .map(_.getName.split("-").head)
         .toSet
-      appIds.foreach { id =>
+      appIds.toSet.foreach { id =>
         try {
           os match {
             case de.tubs.cs.ias.OperatingSystems.ANDROID =>
