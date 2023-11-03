@@ -231,16 +231,11 @@
       "id"  : "FAMILY",
       "name" : "Kids"
     }],
-    "login" : {
-      "email" : "username",
-      "password" : "password",
-      "twoFA" : "N/A"
-    },
     "googleplay" : "/path/to/googleplay/cmd/googleplay/googleplay",
     "osFolderName" : "android"
   },
   "telegram" : {
-    "enable" : true,
+    "enable" : false,
     "apiKey" : "KEY",
     "chatId" : "CHATID"
   }

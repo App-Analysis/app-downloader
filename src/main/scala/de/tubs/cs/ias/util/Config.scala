@@ -18,7 +18,7 @@ object Config extends DefaultJsonProtocol {
     iOSConfig)
 
   implicit val androidConfigFormat: RootJsonFormat[AndroidConfig] =
-    jsonFormat4(AndroidConfig)
+    jsonFormat3(AndroidConfig)
 
   implicit val configFormat: RootJsonFormat[Config] = jsonFormat6(Config.apply)
 
@@ -40,7 +40,6 @@ case class iOSConfig(categories: List[AppCategory],
                      osFolderName: String)
 
 case class AndroidConfig(categories: List[AppCategory],
-                         login: LoginConfig,
                          osFolderName: String,
                          googleplay: String)
 
