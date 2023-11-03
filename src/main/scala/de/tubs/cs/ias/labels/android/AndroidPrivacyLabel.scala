@@ -13,6 +13,7 @@ import spray.json.{
   RootJsonFormat,
   enrichAny
 }
+import wvlet.log.LogSupport
 
 import scala.annotation.tailrec
 case class SecurityPractices(dataEncryptedInTransit: Option[Boolean],
@@ -42,7 +43,7 @@ case class AndroidPrivacyLabel(name: String,
                                collectedData: DataSection,
                                securityPractices: SecurityPractices)
 
-object AndroidPrivacyLabel extends DefaultJsonProtocol {
+object AndroidPrivacyLabel extends DefaultJsonProtocol with LogSupport {
 
   private def StringConverter(context: String)(value: JsValue): String = {
     value match {
@@ -58,12 +59,15 @@ object AndroidPrivacyLabel extends DefaultJsonProtocol {
                                    hole: List[Int],
                                    converter: JsValue => T,
                                    optional: Option[T] = None): T = {
+    //println(hole.mkString(","))
     if (hole.isEmpty) {
       converter(rabbit)
     } else {
       rabbit match {
         case JsArray(elements) =>
-          downTheRabbitHole(elements(hole.head), hole.tail, converter)
+          assert(elements.length > hole.head,
+                 s"no ${hole.head} in ${JsArray(elements).prettyPrint}")
+          downTheRabbitHole(elements(hole.head), hole.tail, converter, optional)
         case _ if optional.nonEmpty =>
           optional.get
         case x if optional.isEmpty =>
@@ -125,9 +129,12 @@ object AndroidPrivacyLabel extends DefaultJsonProtocol {
 
   def parseDataSection(arr: JsValue, idx: Int): DataSection = {
     arr match {
-      case JsNull => DataSection(List())
+      case JsNull     => DataSection(List())
       case x: JsArray =>
-        downTheRabbitHole(x, List(idx, 0), _.asInstanceOf[JsArray]) match {
+        //enumerate(x)
+        downTheRabbitHole(x, List(idx, 0), identity) match {
+          case JsNull =>
+            DataSection(List())
           case idx0: JsArray =>
             val ret = idx0.elements.flatMap {
               case r: JsArray =>
@@ -156,50 +163,96 @@ object AndroidPrivacyLabel extends DefaultJsonProtocol {
     }
   }
 
+  def enumerate(arr: JsArray,
+                depth: Int = 1,
+                counters: List[Int] = List(),
+                sb: StringBuilder = new StringBuilder()): StringBuilder = {
+    var counter = 0
+    def getCounter: String = {
+      (counter :: counters).reverse.mkString("-")
+    }
+    val formatCmd = s"%${depth}s"
+    val formatString = String.format(formatCmd, "")
+    arr.elements.foreach {
+      case elem: JsString =>
+        sb.append(s"$formatString $getCounter : ${elem.value}\n")
+        counter = counter + 1
+      case elem: JsArray =>
+        sb.append(s"$formatString $getCounter : [\n")
+        enumerate(elem, depth + 1, counter :: counters, sb = sb)
+        sb.append(s"$formatString ]\n")
+        counter = counter + 1
+      case other: JsValue =>
+        sb.append(s"$formatString $getCounter : ${other.prettyPrint}\n")
+        counter = counter + 1
+    }
+    sb
+  }
+
   def apply(payload: JsArray): AndroidPrivacyLabel = {
-    val data =
-      downTheRabbitHole(payload, List(1, 2), elem => elem.asInstanceOf[JsArray])
-    val name: String =
-      downTheRabbitHole(data, List(0, 0), StringConverter("name"))
-    val appId: String =
-      downTheRabbitHole(payload, List(1, 11, 0, 0), StringConverter("appid"))
-    val developer = DeveloperInfo(
-      downTheRabbitHole(data, List(68, 0), StringConverter("dev name")),
-      downTheRabbitHole(data, List(68, 1, 4, 2), StringConverter("dev path")),
-      downTheRabbitHole(data,
-                        List(69, 0, 5, 2),
-                        StringConverter("dev url"),
-                        Some("")),
-      downTheRabbitHole(data, List(69, 1, 0), StringConverter("dev email")),
-      downTheRabbitHole(data,
+    var current = "data"
+    try {
+      val data =
+        downTheRabbitHole(payload,
+                          List(1, 2),
+                          elem => elem.asInstanceOf[JsArray])
+      current = "name"
+      val name: String =
+        downTheRabbitHole(data, List(0, 0), StringConverter("name"))
+      current = "appId"
+      val appId: String =
+        downTheRabbitHole(payload, List(1, 11, 0, 0), StringConverter("appid"))
+      current = "developer"
+      val developer = DeveloperInfo(
+        downTheRabbitHole(data, List(68, 0), StringConverter("dev name")),
+        downTheRabbitHole(data, List(68, 1, 4, 2), StringConverter("dev path")),
+        downTheRabbitHole(data,
+                          List(69, 0, 5, 2),
+                          StringConverter("dev url"),
+                          Some("")),
+        downTheRabbitHole(data, List(69, 1, 0), StringConverter("dev email")),
+        "N/A (dropped in current label info)"
+        /*downTheRabbitHole(data,
                         List(69, 2, 0),
                         StringConverter("dev addr"),
-                        Some(""))
-    )
-    val icon =
-      downTheRabbitHole(data, List(95, 0, 3, 2), StringConverter("icon"))
-    val privacyPolicy = downTheRabbitHole(data,
-                                          List(99, 0, 5, 2),
-                                          StringConverter("policy"),
-                                          Some(""))
-    val shared = parseDataSection(
-      downTheRabbitHole(data, List(137, 4), identity, Some(JsNull)),
-      0)
-    val collected = parseDataSection(
-      downTheRabbitHole(data, List(137, 4), identity, Some(JsNull)),
-      1)
-    val securityPractices = parseSecurityPractices(
-      downTheRabbitHole(data, List(137, 9, 2), identity, Some(JsNull)))
-    AndroidPrivacyLabel(
-      name,
-      appId,
-      developer,
-      icon,
-      privacyPolicy,
-      shared,
-      collected,
-      securityPractices
-    )
+                        Some(""))*/
+      )
+      current = "icon"
+      val icon = {
+        downTheRabbitHole(data, List(95, 0, 3, 2), StringConverter("icon"))
+      }
+      current = "privacy policy"
+      val privacyPolicy = downTheRabbitHole(data,
+                                            List(99, 0, 5, 2),
+                                            StringConverter("policy"),
+                                            Some(""))
+      current = "shared"
+      val shared = parseDataSection(
+        downTheRabbitHole(data, List(137, 4), identity, Some(JsNull)),
+        0)
+      current = "collected"
+      val collected = parseDataSection(
+        downTheRabbitHole(data, List(137, 4), identity, Some(JsNull)),
+        1)
+      current = "security practices"
+      val securityPractices = parseSecurityPractices(
+        downTheRabbitHole(data, List(137, 9, 2), identity, Some(JsNull)))
+      AndroidPrivacyLabel(
+        name,
+        appId,
+        developer,
+        icon,
+        privacyPolicy,
+        shared,
+        collected,
+        securityPractices
+      )
+    } catch {
+      case x: Throwable =>
+        error(s"unable to retrieve $current")
+        error(enumerate(payload).mkString)
+        throw x
+    }
   }
 
   implicit val securityPracticesFormat: RootJsonFormat[SecurityPractices] =

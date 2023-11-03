@@ -39,6 +39,7 @@ object LabelAction extends LogSupport {
             Thread.sleep(60000) // if we have to break out of the download due to excess try ... calm down for a minute
           case e: Exception =>
             error(e.getMessage)
+            error(e.getStackTrace.mkString("\n"))
             failures.addOne(id -> e.getMessage)
           case e: Error =>
             error(e.getMessage)

@@ -23,7 +23,6 @@ object AppDownloadAction extends LogSupport {
         .filter(_.isFile)
         .map(_.getName.split("-").head)
         .toSet
-      println(appNames)
       appIds.foreach { id =>
         try {
           os match {
