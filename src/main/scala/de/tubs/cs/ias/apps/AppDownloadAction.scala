@@ -18,12 +18,17 @@ object AppDownloadAction extends LogSupport {
       AsciiProgressBar.create("Downloading Apps  ", appIds.length.toLong)
     val failures = MMap[String, String]()
     try {
+      val appNames = new File(folder)
+        .listFiles()
+        .filter(_.isFile)
+        .map(_.getName.split("-").head)
+        .toSet
+      println(appNames)
       appIds.foreach { id =>
         try {
           os match {
             case de.tubs.cs.ias.OperatingSystems.ANDROID =>
-              if (!new File(s"$folder/$id.apk")
-                    .exists()) { // this check is currently pointless as the version is appended
+              if (!appNames.contains(id)) {
                 AndroidAppDownloader.download(id, folder, conf.android) match {
                   case x: AndroidAppDownloader.Panic =>
                     error(s"$id -> ${x.getMessage}")
