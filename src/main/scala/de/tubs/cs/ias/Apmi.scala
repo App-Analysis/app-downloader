@@ -24,6 +24,7 @@ object Apmi extends LogSupport {
       .addSubparser(iOS.parser)
       .addSubparser(Android.parser)
       .addSubparser(Downloader.parser)
+      .addSubparser(Analysis.parser)
       .addSubparser(
         Parser("sentinel", "perform a sanity check on a given download folder")
           .addDefault[(ParsingResult, Config) => Unit]("func", sentinelMain))
