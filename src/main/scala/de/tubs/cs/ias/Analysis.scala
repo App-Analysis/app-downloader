@@ -42,7 +42,7 @@ object Analysis extends LogSupport {
   private def analysisMain(pargs: ParsingResult, config: Config): Unit = {
     val baseFolder = pargs.getValue[String]("os").toLowerCase match {
       case "android" =>
-        pargs.getValueOrElse[String]("folder", config.android.osFolderName)
+        pargs.getValueOrElse[String]("folder", config.downloadFolderRoot + "/" + config.android.osFolderName)
       case "ios" => ???
     }
     info(
