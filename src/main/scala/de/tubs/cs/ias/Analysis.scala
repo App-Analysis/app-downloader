@@ -3,9 +3,8 @@ package de.tubs.cs.ias
 import de.halcony.argparse.{Parser, ParsingResult}
 import de.tubs.cs.ias.applist.AppListParser.appListFormat
 import de.tubs.cs.ias.applist.MobileAppList
-import de.tubs.cs.ias.util.Config
-import spray.json.{JsNull, JsNumber, JsObject, JsValue, JsonParser}
-import de.tubs.cs.ias.util.{FileSystemInteraction => fsi}
+import de.tubs.cs.ias.util.{Config, FileSystemInteraction => fsi}
+import spray.json.{JsNull, JsNumber, JsObject, JsonParser}
 import wvlet.log.LogSupport
 
 import java.io.File
@@ -104,10 +103,6 @@ case class Analysis(date: String,
                     labels: Set[String],
                     apps: Set[String],
                     previousList: Option[Set[String]] = None) {
-
-  println(list.mkString(","))
-  println(labels.mkString(","))
-  println(apps.mkString(","))
 
   def getJson: JsObject = {
     JsObject(

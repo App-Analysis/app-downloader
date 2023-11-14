@@ -22,7 +22,7 @@ object LabelAction extends LogSupport {
       AsciiProgressBar.create("Downloading Labels ", appIds.toSet.size.toLong)
     val failures = MMap[String, String]()
     try {
-      appIds.toSet.foreach { id : String =>
+      appIds.toSet.foreach { id: String =>
         try {
           val file = s"$folder/$id.json"
           if (!new File(file).exists()) {
