@@ -56,7 +56,7 @@ object Analysis extends LogSupport {
       .sortBy(_.date) //assuming smallest to largest date sorting
     val timeline : List[Analysis] = if (individual.length > 1) {
       var last = individual.head
-      println(individual.map(_.date).mkString(","))
+      //println(individual.map(_.date).mkString(","))
       List(individual.head) ++ individual.tail.map { indi =>
         val buff = indi.addPrevious(last)
         last = buff
@@ -132,7 +132,7 @@ case class Analysis(date: String,
              list,
              labels,
              apps,
-             Some(getFullListPotential ++ previous.getFullListPotential))
+             Some(previous.getFullListPotential))
   }
 
 }
