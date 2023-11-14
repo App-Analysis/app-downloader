@@ -54,15 +54,15 @@ object Analysis extends LogSupport {
                  pargs.getValue[String]("os").toLowerCase)
       }
       .sortBy(_.date) //assuming smallest to largest date sorting
-    val timeline = if (individual.length > 1) {
+    val timeline : List[Analysis] = if (individual.length > 1) {
       var last = individual.head
-      individual.tail.map { indi =>
+      List(individual.head) ++ individual.tail.map { indi =>
         val buff = indi.addPrevious(last)
         last = buff
         buff
-      }
+      }.toList
     } else {
-      individual
+      individual.toList
     }
     println(
       JsObject(
