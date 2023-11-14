@@ -114,7 +114,21 @@ case class Analysis(date: String,
         case Some(value) => JsNumber(value.size)
         case None        => JsNull
       }),
-      "5-individual" -> JsObject(
+      "5-previousMissingLabel" -> (
+        previousList match {
+          case Some(value) =>
+            JsNumber(value.diff(labels).size)
+          case None => JsNull
+        }
+      ),
+      "6-previousMissingApps" -> (
+        previousList match {
+          case Some(value) =>
+            JsNumber(value.diff(apps).size)
+          case None => JsNull
+        }
+        ),
+      "7-individual" -> JsObject(
         "1-listCount" -> JsNumber(list.size),
         "2-labelsCount" -> JsNumber(labels.intersect(list).size),
         "3-appCount" -> JsNumber(apps.intersect(list).size)
