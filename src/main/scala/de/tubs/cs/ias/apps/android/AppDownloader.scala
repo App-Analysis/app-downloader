@@ -145,7 +145,7 @@ object AppDownloader extends LogSupport {
     val errLines = ListBuffer[String]()
     val stdLines = ListBuffer[String]()
     //val cmd = s"$googleplay -acquire -p $DEVICE_TYPE -a $app"
-    val cmd = s"$googleplay -acquire -a $app"
+    val cmd = s"$googleplay -acquire -a $app -p $DEVICE_TYPE"
     try {
       val ret = cmd ! ProcessLogger(_ => (), err => errLines.append(err))
       val panic = errLines.filter(_.contains("panic:"))
