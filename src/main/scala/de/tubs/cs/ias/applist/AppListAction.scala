@@ -1,9 +1,6 @@
 package de.tubs.cs.ias.applist
 
 import de.tubs.cs.ias.OperatingSystems.OperatingSystem
-import de.tubs.cs.ias.applist.ios.AppListDownloader.{
-  download => iosAppListDownload
-}
 import de.tubs.cs.ias.applist.android.AppListDownloader.{
   download => androidAppListDownload
 }
@@ -43,11 +40,7 @@ object AppListAction extends LogSupport {
         case AppCategory(name, id) =>
           operatingSystem match {
             case de.tubs.cs.ias.OperatingSystems.IOS =>
-              val file = s"$folder/$name.json"
-              if (!new File(file).exists())
-                fsi.writeFile(iosAppListDownload(id), file)
-              bar.step()
-              name -> readInAppList(file)
+              throw new NotImplementedError("we dropped iOS support for now")
             case de.tubs.cs.ias.OperatingSystems.ANDROID =>
               val file = s"$folder/$name.json"
               if (!new File(file).exists())

@@ -2,7 +2,6 @@ package de.tubs.cs.ias
 
 import de.halcony.argparse.{Parser, ParsingException, ParsingResult}
 import de.tubs.cs.ias.applist.{AppListAction, MobileAppList}
-import de.tubs.cs.ias.download.Downloader
 import de.tubs.cs.ias.util.{Config, FileSystemInteraction => fsi}
 import wvlet.log.LogFormatter.PlainSourceCodeLogFormatter
 import wvlet.log.{FileHandler, LogSupport}
@@ -24,11 +23,6 @@ object Apmi extends LogSupport {
                            Some("./config.json"),
                            "the config file used for running")
       .addSubparser(Android.parser)
-      .addSubparser(Downloader.parser)
-      .addSubparser(Analysis.parser)
-      .addSubparser(
-        Parser("sentinel", "perform a sanity check on a given download folder")
-          .addDefault[(ParsingResult, Config) => Unit]("func", sentinelMain))
 
   def main(args: Array[String]): Unit = {
     try {
@@ -194,10 +188,5 @@ object Apmi extends LogSupport {
       info("using given csv values")
       list.split(",").toList
     }
-  }
-
-  private def sentinelMain(@nowarn pargs: ParsingResult,
-                           @nowarn conf: Config): Unit = {
-    throw new NotImplementedError()
   }
 }

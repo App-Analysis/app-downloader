@@ -2,7 +2,6 @@ package de.tubs.cs.ias.apps
 
 import de.tubs.cs.ias.OperatingSystems.OperatingSystem
 import de.tubs.cs.ias.apps.android.{AppDownloader => AndroidAppDownloader}
-import de.tubs.cs.ias.apps.ios.{AppDownloader => IosAppDownloader}
 import de.tubs.cs.ias.util.{ActionReport, AsciiProgressBar, Config}
 import wvlet.log.LogSupport
 import java.io.File
@@ -42,18 +41,7 @@ object AppDownloadAction extends LogSupport {
                 }
               }
             case de.tubs.cs.ias.OperatingSystems.IOS =>
-              if (!new File(s"$folder/$id.ipa").exists()) {
-                IosAppDownloader.downloadAppUsingIpatoolPy(
-                  id,
-                  folder,
-                  conf.ios.login,
-                  conf.ios.ipatoolpy) match {
-                  case Some(value) =>
-                    error(id -> value)
-                    failures.addOne(id -> value)
-                  case None =>
-                }
-              }
+              throw new NotImplementedError("we dropped iOS support for now")
           }
         } catch {
           case e: Exception =>

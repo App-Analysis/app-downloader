@@ -141,7 +141,6 @@ object AppDownloader extends LogSupport {
 
   def purchase(app: String, googleplay: String): GooglePlayResult = {
     val errLines = ListBuffer[String]()
-    val stdLines = ListBuffer[String]()
     //val cmd = s"$googleplay -acquire -p $DEVICE_TYPE -a $app"
     val cmd = s"$googleplay -acquire -a $app -p $DEVICE_TYPE"
     try {
