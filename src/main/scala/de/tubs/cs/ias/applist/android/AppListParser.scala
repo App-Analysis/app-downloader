@@ -39,6 +39,9 @@ object AppListParser {
             .asInstanceOf[JsArray]
             .elements
           s"${priceElements.head.asInstanceOf[JsNumber].value} ${priceElements.apply(1).asInstanceOf[JsString].value}"
+        case x =>
+          throw new RuntimeException(
+            s"expected only Null or Json Array but got ${x.getClass.toString}")
       }
     MobileApp(name, appId, category, position, price)
   }
@@ -66,6 +69,9 @@ object AppListParser {
       case elem: JsArray =>
         counter = counter + 1
         readInTopChartEntry(elem, counter)
+      case x =>
+        throw new RuntimeException(
+          s"expected only Json Array but got ${x.getClass.toString}")
     }
     val category: Set[String] =
       apps.map(_.category).map(elem => elem -> elem).toList.toMap.keySet

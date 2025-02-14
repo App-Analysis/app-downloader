@@ -59,7 +59,6 @@ object AndroidPrivacyLabel extends DefaultJsonProtocol with LogSupport {
                                    hole: List[Int],
                                    converter: JsValue => T,
                                    optional: Option[T] = None): T = {
-    //println(hole.mkString(","))
     if (hole.isEmpty) {
       converter(rabbit)
     } else {
@@ -68,10 +67,10 @@ object AndroidPrivacyLabel extends DefaultJsonProtocol with LogSupport {
           assert(elements.length > hole.head,
                  s"no ${hole.head} in ${JsArray(elements).prettyPrint}")
           downTheRabbitHole(elements(hole.head), hole.tail, converter, optional)
-        case _ if optional.nonEmpty =>
-          optional.get
-        case x if optional.isEmpty =>
-          throw new RuntimeException(x.prettyPrint + " is not of type JsArray")
+        case x =>
+          optional.getOrElse(
+            throw new RuntimeException(
+              x.prettyPrint + " is not of type JsArray"))
       }
     }
   }
@@ -154,12 +153,18 @@ object AndroidPrivacyLabel extends DefaultJsonProtocol with LogSupport {
                                       _.asInstanceOf[JsBoolean].value)
                   )
                 }
+              case x: JsValue =>
+                throw new RuntimeException(
+                  s"unexpected JsValue of type ${x.getClass.toString}")
             }
             DataSection(ret.toList)
           case x =>
             throw new RuntimeException(
               s"data section element $idx,0 is not JsArray: ${x.prettyPrint}")
         }
+      case x =>
+        throw new RuntimeException(
+          s"we expected Null or Json Array but got ${x.getClass.toString}")
     }
   }
 
@@ -256,16 +261,16 @@ object AndroidPrivacyLabel extends DefaultJsonProtocol with LogSupport {
   }
 
   implicit val securityPracticesFormat: RootJsonFormat[SecurityPractices] =
-    jsonFormat4(SecurityPractices)
+    jsonFormat4(SecurityPractices.apply)
 
   implicit val dataEntryFormat: RootJsonFormat[DataEntry] = jsonFormat4(
-    DataEntry)
+    DataEntry.apply)
 
   implicit val dataSectionFormat: RootJsonFormat[DataSection] = jsonFormat1(
-    DataSection)
+    DataSection.apply)
 
   implicit val developerInfoFormat: RootJsonFormat[DeveloperInfo] = jsonFormat5(
-    DeveloperInfo)
+    DeveloperInfo.apply)
 
   implicit val androidPrivacyLabelFormat: RootJsonFormat[AndroidPrivacyLabel] =
     jsonFormat8(AndroidPrivacyLabel.apply)

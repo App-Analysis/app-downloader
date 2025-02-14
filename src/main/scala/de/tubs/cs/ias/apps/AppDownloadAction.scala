@@ -23,7 +23,7 @@ object AppDownloadAction extends LogSupport {
         .filter(_.isFile)
         .map(_.getName.split("-").head)
         .toSet
-      appIds.toSet.foreach { id: String =>
+      appIds.toSet.foreach { id =>
         try {
           os match {
             case de.tubs.cs.ias.OperatingSystems.ANDROID =>
@@ -36,6 +36,9 @@ object AppDownloadAction extends LogSupport {
                     throw new RuntimeException(
                       "download does not return a result")
                   case AndroidAppDownloader.Success =>
+                  case _: AndroidAppDownloader.InfoResult =>
+                    throw new RuntimeException(
+                      "this should never be fed back into this function")
                 }
               }
             case de.tubs.cs.ias.OperatingSystems.IOS =>

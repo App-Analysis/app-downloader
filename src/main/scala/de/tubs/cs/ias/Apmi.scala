@@ -15,13 +15,14 @@ import scala.annotation.nowarn
 object Apmi extends LogSupport {
 
   private val parser =
-    Parser("Apmi", "tool to keep up to date with the current state of iOS apps")
-      .addOptional("config",
-                   "c",
-                   "config",
-                   Some("./config.json"),
-                   "the config file used for running")
-      .addSubparser(iOS.parser)
+    Parser("Apmi",
+           "tool to keep up to date with the current state of Android apps")
+      .addOptional[String]("config",
+                           'c',
+                           "config",
+                           identity,
+                           Some("./config.json"),
+                           "the config file used for running")
       .addSubparser(Android.parser)
       .addSubparser(Downloader.parser)
       .addSubparser(Analysis.parser)
@@ -31,12 +32,12 @@ object Apmi extends LogSupport {
 
   def main(args: Array[String]): Unit = {
     try {
-      val pargs = parser.parse(args)
-      val config = Config.read(pargs.getValue[String]("config"))
+      val pargs = parser.parseArgs(args)
+      val config = Config.read(pargs.get[String]("config"))
       try {
         if (config.telegram.enable) {}
         pargs
-          .getValue[(ParsingResult, Config) => Unit]("func")
+          .get[(ParsingResult, Config) => Unit]("func")
           .apply(pargs, config)
       } finally {
         if (config.telegram.enable) {}

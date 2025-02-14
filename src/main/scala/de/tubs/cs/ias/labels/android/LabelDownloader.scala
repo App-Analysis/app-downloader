@@ -1,21 +1,53 @@
 package de.tubs.cs.ias.labels.android
 
 import de.tubs.cs.ias.util.googlebatch.GoogleBatchPayload
-import dispatch.Defaults._
-import dispatch._
 import spray.json.{JsArray, JsString, JsonParser}
+import sttp.client4.Response
+import sttp.client4.quick.*
+
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration.Inf
 
 object LabelDownloader {
 
-  val GOOGLE_BATCH_EXECUTE =
-    "https://play.google.com/_/PlayStoreUi/data/batchexecute"
   val LANGUAGE = "EN"
   val COUNTRY = "DE"
+  val GOOGLE_BATCH_EXECUTE =
+    uri"https://play.google.com/_/PlayStoreUi/data/batchexecute?hl=${LANGUAGE}&gl=${COUNTRY}"
 
+  def getPrivacyLabel(id: String): String = {
+    val bodyPayload = GoogleBatchPayload.createBodyPayload(
+      List(
+        GoogleBatchPrivacyLabelEnvelope(
+          GoogleBatchPrivacyLabelPayload(id)
+        )
+      )
+    )
+    val response: Response[String] = quickRequest
+      .post(GOOGLE_BATCH_EXECUTE)
+      .body(s"f.req=${URLEncoder.encode(bodyPayload, StandardCharsets.UTF_8)}")
+      .contentType("application/x-www-form-urlencoded",
+                   StandardCharsets.UTF_8.toString)
+      .send()
+    if (response.is200) {
+      JsonParser(response.body.split("\n")(2)) match {
+        case JsArray(elements) =>
+          assert(elements.head.asInstanceOf[JsString].value == "wrb.fr")
+          assert(elements(1).asInstanceOf[JsString].value == "Ws7gDc") // this is the endpoint we specified
+          val data = JsonParser(elements(2).asInstanceOf[JsString].value)
+          AndroidPrivacyLabel.prettyPrint(
+            AndroidPrivacyLabel(data.asInstanceOf[JsArray]))
+        case x =>
+          throw new RuntimeException(
+            s"expected Json Array but got ${x.getClass.toString}")
+      }
+    } else {
+      throw new RuntimeException(
+        s"encounterd non 200 response when trying to download label $id -> ${response.code}")
+    }
+  }
+
+  /*
   def getPrivacyLabel(id: String): String = {
     val body = GoogleBatchPayload.createBodyPayload(
       List(
@@ -52,6 +84,6 @@ object LabelDownloader {
         }
       case _ => throw new RuntimeException("return value needs to be an array")
     }
-  }
+  }*/
 
 }

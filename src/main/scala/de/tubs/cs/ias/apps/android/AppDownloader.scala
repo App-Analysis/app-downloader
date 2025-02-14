@@ -2,9 +2,7 @@ package de.tubs.cs.ias.apps.android
 
 import de.tubs.cs.ias.util.AndroidConfig
 import wvlet.log.LogSupport
-
 import java.io.File
-import java.lang
 import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer
 import scala.sys.process._
@@ -221,9 +219,15 @@ object AppDownloader extends LogSupport {
                 throw new RuntimeException(
                   "download Apk does not return a result")
               case Success => Success
+              case x =>
+                throw new RuntimeException(
+                  s"unexpected result type ${x.toString}")
             }
-
+          case x =>
+            throw new RuntimeException(s"unexpected result type ${x.toString}")
         }
+      case x =>
+        throw new RuntimeException(s"unexpected result type ${x.toString}")
     }
   }
 

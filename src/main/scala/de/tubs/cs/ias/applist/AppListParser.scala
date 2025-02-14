@@ -6,9 +6,9 @@ import wvlet.log.LogSupport
 object AppListParser extends DefaultJsonProtocol with LogSupport {
 
   implicit val mobileAppFormat: RootJsonFormat[MobileApp] = jsonFormat5(
-    MobileApp)
+    MobileApp.apply)
 
   implicit val appListFormat: RootJsonFormat[MobileAppList] = jsonFormat2(
-    MobileAppList)
+    MobileAppList.apply)
 
 }

@@ -6,19 +6,19 @@ import spray.json._
 object Config extends DefaultJsonProtocol {
 
   implicit val appCategoryFormat: RootJsonFormat[AppCategory] = jsonFormat2(
-    AppCategory)
+    AppCategory.apply)
 
   implicit val loginConfigFormat: RootJsonFormat[LoginConfig] = jsonFormat3(
-    LoginConfig)
+    LoginConfig.apply)
 
   implicit val telegramConfigFormat: RootJsonFormat[TelegramConfig] =
-    jsonFormat3(TelegramConfig)
+    jsonFormat3(TelegramConfig.apply)
 
   implicit val iosConfigFormat: RootJsonFormat[iOSConfig] = jsonFormat4(
-    iOSConfig)
+    iOSConfig.apply)
 
   implicit val androidConfigFormat: RootJsonFormat[AndroidConfig] =
-    jsonFormat3(AndroidConfig)
+    jsonFormat3(AndroidConfig.apply)
 
   implicit val configFormat: RootJsonFormat[Config] = jsonFormat6(Config.apply)
 

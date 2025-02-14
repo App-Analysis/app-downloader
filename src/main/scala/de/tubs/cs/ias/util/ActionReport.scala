@@ -9,9 +9,9 @@ case class ActionReportCollection(collection: Map[String, ActionReport])
 object ActionReportJsonWriter extends DefaultJsonProtocol {
 
   implicit val actionReportFormat: RootJsonFormat[ActionReport] = jsonFormat3(
-    ActionReport)
+    ActionReport.apply)
 
   implicit val actionReportCollection: RootJsonFormat[ActionReportCollection] =
-    jsonFormat1(ActionReportCollection)
+    jsonFormat1(ActionReportCollection.apply)
 
 }
