@@ -11,7 +11,6 @@ libraryDependencies ++= Seq(
   "org.wvlet.airframe"            %% "airframe-log"            % "2025.1.6",
   "org.slf4j"                     %  "slf4j-nop"               % "2.0.16",
   "com.softwaremill.sttp.client4" %% "core"                    % "4.0.0-RC1",
-  "me.tongfei"                    % "progressbar"              % "0.10.1",
   "org.dispatchhttp"              %% "dispatch-core"           % "2.0.0"
 )
 
