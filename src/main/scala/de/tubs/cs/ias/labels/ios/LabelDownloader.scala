@@ -1,24 +1,18 @@
 package de.tubs.cs.ias.labels.ios
 
 import de.tubs.cs.ias.labels.{BadTokenException, TooManyTriesException}
-import scalaj.http.Http
 import wvlet.log.LogSupport
-
-import java.net.URI
-import java.net.http.HttpResponse.BodyHandlers
-import java.net.http.{
-  HttpClient => jClient,
-  HttpRequest => jRequest,
-  HttpResponse => jResponse
-}
 import scala.util.Random
+import sttp.client4.Response
+import sttp.client4.quick._
 
 object LabelDownloader extends LogSupport {
 
   private var token = getToken
 
   private def getToken: String = {
-    val appid = 553834731
+    val appid = 553834731 // this is candy crush and should not change that often
+    val response : Response[String] = quickRequest.
     val result = Http(s"https://apps.apple.com/de/app/id$appid")
       .header("User-Agent", "Wget/1.12 (linux-gnu)")
       .asString
