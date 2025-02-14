@@ -14,13 +14,10 @@ object Config extends DefaultJsonProtocol {
   implicit val telegramConfigFormat: RootJsonFormat[TelegramConfig] =
     jsonFormat3(TelegramConfig.apply)
 
-  implicit val iosConfigFormat: RootJsonFormat[iOSConfig] = jsonFormat4(
-    iOSConfig.apply)
-
   implicit val androidConfigFormat: RootJsonFormat[AndroidConfig] =
     jsonFormat3(AndroidConfig.apply)
 
-  implicit val configFormat: RootJsonFormat[Config] = jsonFormat6(Config.apply)
+  implicit val configFormat: RootJsonFormat[Config] = jsonFormat4(Config.apply)
 
   def read(path: String): Config = {
     fsi.readInTextFile(path).parseJson.convertTo[Config]
@@ -34,18 +31,11 @@ case class LoginConfig(email: String, password: String, twoFA: String)
 
 case class TelegramConfig(enable: Boolean, apiKey: String, chatId: String)
 
-case class iOSConfig(categories: List[AppCategory],
-                     login: LoginConfig,
-                     ipatoolpy: String,
-                     osFolderName: String)
-
 case class AndroidConfig(categories: List[AppCategory],
                          osFolderName: String,
                          googleplay: String)
 
-case class Config(ios: iOSConfig,
-                  android: AndroidConfig,
+case class Config(android: AndroidConfig,
                   telegram: TelegramConfig,
                   maxAmountApps: Int,
-                  downloadFolderRoot: String,
-                  downloaderConfig: String)
+                  downloadFolderRoot: String)
