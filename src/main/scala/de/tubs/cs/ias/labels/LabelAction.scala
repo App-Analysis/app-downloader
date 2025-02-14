@@ -6,13 +6,14 @@ import wvlet.log.LogSupport
 import de.tubs.cs.ias.util.{
   ActionReport,
   AsciiProgressBar,
+  TelegramSupport,
   FileSystemInteraction => fsi
 }
 
 import java.io.File
 import collection.mutable.{Map => MMap}
 
-object LabelAction extends LogSupport {
+object LabelAction extends LogSupport with TelegramSupport {
 
   def download(appIds: List[String],
                folder: String,
@@ -47,6 +48,9 @@ object LabelAction extends LogSupport {
               failures.addOne(id -> e.getMessage)
           } finally {
             bar.step()
+            if (bar.getCurrent % 100 == 0)
+              sendTelegramMessage(
+                s"current label download progress: ${bar.getCurrent}")
           }
       }
     } finally {

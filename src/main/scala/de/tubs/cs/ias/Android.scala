@@ -8,13 +8,13 @@ import de.tubs.cs.ias.apps.AppDownloadAction
 import de.tubs.cs.ias.apps.android.AppDownloader
 import de.tubs.cs.ias.labels.LabelAction
 import de.tubs.cs.ias.util.ActionReportJsonWriter.actionReportCollection
-import de.tubs.cs.ias.util.{ActionReport, ActionReportCollection, Config, FileSystemInteraction => fsi}
+import de.tubs.cs.ias.util.{ActionReport, ActionReportCollection, Config, TelegramSupport, FileSystemInteraction => fsi}
 import spray.json.enrichAny
 import wvlet.log.LogSupport
 
 import scala.annotation.nowarn
 
-object Android extends LogSupport {
+object Android extends LogSupport with TelegramSupport {
 
   val parser : Parser = Parser("android", "perform actions for android")
     .addSubparser(Parser("download", "download app lists, privacy labels, and ipas")
@@ -50,12 +50,14 @@ object Android extends LogSupport {
   private def downloadChartListMain(pargs : ParsingResult, conf : Config) : ActionReport = {
     val (_, listsFolder, _, _) = ensureFolderStructure(conf.downloadFolderRoot + conf.android.osFolderName + "/", pargs.getFLag("continue"))
     info("starting chart list acquisition")
+    sendTelegramMessage("downloading chart lists")
     val (appLists, report): (Map[String, MobileAppList], ActionReport) = AppListAction.download(ANDROID, conf.android.categories, listsFolder)
     appLists.foreach {
       case (category, list) =>
         info(s"category $category contains ${list.apps.length}")
     }
     info(s"overall we have ${appLists.flatMap(_._2.apps).toSet.size} unique apps")
+    sendTelegramMessage(s"overall we have ${appLists.flatMap(_._2.apps).toSet.size} unique apps in our charts")
     report
   }
 
@@ -88,12 +90,14 @@ object Android extends LogSupport {
     AppDownloader.readinessCheckGooglePlayTool(conf.android.googleplay)
     val (_, _, _, appsFolder) = ensureFolderStructure(conf.downloadFolderRoot + conf.android.osFolderName + "/", pargs.getFLag("continue"))
     info("starting automated app acquisition")
+    sendTelegramMessage("starting app download")
     val charts = conf.android.categories.map(_.name)
     // we assert that charts for the current iteration have already been downloaded and are in /lists/
     // this also holds for previous collection runs
     val currentAppChartList = Apmi.getCurrentAppChartState(charts, conf.downloadFolderRoot + conf.android.osFolderName + "/")
     val allAppIds = currentAppChartList.flatMap(_._2.apps.map(_.bundleId)).toList
     info(s"we have ${allAppIds.length} apps to download")
+    sendTelegramMessage(s"we have ${allAppIds.length} apps to download")
     AppDownloadAction.download(
       allAppIds.slice(0, List(allAppIds.length, conf.maxAmountApps).min),
       appsFolder,
@@ -111,16 +115,19 @@ object Android extends LogSupport {
   private def downloadLabelsAutomatedMain(@nowarn pargs: ParsingResult, @nowarn conf: Config): ActionReport  = {
     val (_, _, labelsFolder, _) = ensureFolderStructure(conf.downloadFolderRoot + conf.android.osFolderName + "/", pargs.get[Boolean]("continue"))
     info("starting automated label acquisition")
+    sendTelegramMessage("downloading labels")
     val charts = conf.android.categories.map(_.name)
     val currentAppChartList = getCurrentAppChartState(charts, conf.downloadFolderRoot + conf.android.osFolderName + "/")
     val allAppIds = currentAppChartList.flatMap(_._2.apps.map(_.bundleId)).toList
     info(s"we have ${allAppIds.length} labels to download")
+    sendTelegramMessage(s"we have ${allAppIds.length} labels to download")
     LabelAction.download(allAppIds.slice(0, List(allAppIds.length, conf.maxAmountApps).min), labelsFolder, ANDROID)
   }
 
   private def downloadTopAppsMain(pargs : ParsingResult, conf : Config) : Unit = {
     try {
       info("running full chain download")
+      sendTelegramMessage("starting full download process")
       val (baseFolder, _, _, _) = ensureFolderStructure(conf.downloadFolderRoot + conf.android.osFolderName + "/", pargs.get[Boolean]("continue"))
       val chartReport: ActionReport = this.downloadChartListMain(pargs, conf)
       val labelsReport: ActionReport = this.downloadLabelsAutomatedMain(pargs, conf)
@@ -135,8 +142,12 @@ object Android extends LogSupport {
     } catch {
       case e: Error =>
         error(e.getMessage)
+        sendTelegramMessage(s"full download process failed ${e.getMessage}")
       case e: Exception =>
         error(e.getMessage)
+        sendTelegramMessage(s"full download process failed ${e.getMessage}")
+    } finally {
+      sendTelegramMessage("full download process done")
     }
   }
 

@@ -1,4 +1,4 @@
-dependencyOverrides += "com.puppycrawl.tools" % "checkstyle"            % "7.3"
+dependencyOverrides += "com.puppycrawl.tools" % "checkstyle"            % "10.21.2"
 addSbtPlugin("com.geirsson"        % "sbt-scalafmt"          % "1.5.1")
 addSbtPlugin("com.etsy"            % "sbt-checkstyle-plugin" % "3.1.1")
 addSbtPlugin("com.github.gseitz"   % "sbt-release"           % "1.0.6")

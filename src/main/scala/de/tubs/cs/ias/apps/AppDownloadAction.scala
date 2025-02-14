@@ -2,12 +2,19 @@ package de.tubs.cs.ias.apps
 
 import de.tubs.cs.ias.OperatingSystems.OperatingSystem
 import de.tubs.cs.ias.apps.android.{AppDownloader => AndroidAppDownloader}
-import de.tubs.cs.ias.util.{ActionReport, AsciiProgressBar, Config}
+import de.tubs.cs.ias.labels.LabelAction.sendTelegramMessage
+import de.tubs.cs.ias.util.{
+  ActionReport,
+  AsciiProgressBar,
+  Config,
+  TelegramSupport
+}
 import wvlet.log.LogSupport
+
 import java.io.File
 import scala.collection.mutable.{Map => MMap}
 
-object AppDownloadAction extends LogSupport {
+object AppDownloadAction extends LogSupport with TelegramSupport {
 
   def download(appIds: List[String],
                folder: String,
@@ -53,6 +60,9 @@ object AppDownloadAction extends LogSupport {
             failures.addOne(id -> e.getMessage)
         } finally {
           bar.step()
+          if (bar.getCurrent % 100 == 0)
+            sendTelegramMessage(
+              s"current label download progress: ${bar.getCurrent}")
         }
       }
     } finally {

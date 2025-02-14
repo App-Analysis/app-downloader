@@ -2,7 +2,12 @@ package de.tubs.cs.ias
 
 import de.halcony.argparse.{Parser, ParsingException, ParsingResult}
 import de.tubs.cs.ias.applist.{AppListAction, MobileAppList}
-import de.tubs.cs.ias.util.{Config, FileSystemInteraction => fsi}
+import de.tubs.cs.ias.util.{
+  Config,
+  TelegramClient,
+  TelegramSupport,
+  FileSystemInteraction => fsi
+}
 import wvlet.log.LogFormatter.PlainSourceCodeLogFormatter
 import wvlet.log.{FileHandler, LogSupport}
 
@@ -11,7 +16,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import scala.annotation.nowarn
 
-object Apmi extends LogSupport {
+object Apmi extends LogSupport with TelegramSupport {
 
   private val parser =
     Parser("Apmi",
@@ -29,12 +34,17 @@ object Apmi extends LogSupport {
       val pargs = parser.parseArgs(args)
       val config = Config.read(pargs.get[String]("config"))
       try {
-        if (config.telegram.enable) {}
+        if (config.telegram.enable) {
+          TelegramClient.enableTelegramClient(config.telegram.apiKey,
+                                              config.telegram.chatId.toLong)
+          sendTelegramMessage("Starting ...")
+        }
         pargs
           .get[(ParsingResult, Config) => Unit]("func")
           .apply(pargs, config)
       } finally {
-        if (config.telegram.enable) {}
+        sendTelegramMessage("Done!")
+        TelegramClient.disableTelegramClient()
       }
     } catch {
       case _: ParsingException =>
