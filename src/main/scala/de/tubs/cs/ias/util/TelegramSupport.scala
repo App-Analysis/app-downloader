@@ -6,8 +6,17 @@ import wvlet.log.LogSupport
 
 trait TelegramSupport {
 
+  private var telegramClientContext : Option[String] = None
+
+  protected def setContext(context : String) : Unit = telegramClientContext = Some(context)
+
+  private def getContext : String = telegramClientContext match {
+    case Some(value) => value
+    case None => this.getClass.toString.split("\\.").last
+  }
+
   def sendTelegramMessage(msg: String): Unit = {
-    TelegramClient.send(this.getClass.toString.split("\\.").last, msg)
+    TelegramClient.send(getContext, msg)
   }
 
 }

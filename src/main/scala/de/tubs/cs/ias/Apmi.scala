@@ -37,6 +37,7 @@ object Apmi extends LogSupport with TelegramSupport {
         if (config.telegram.enable) {
           TelegramClient.enableTelegramClient(config.telegram.apiKey,
                                               config.telegram.chatId.toLong)
+          info("telegram enabled")
           sendTelegramMessage("Starting ...")
         }
         pargs
@@ -47,7 +48,8 @@ object Apmi extends LogSupport with TelegramSupport {
         TelegramClient.disableTelegramClient()
       }
     } catch {
-      case _: ParsingException =>
+      case x : ParsingException =>
+        println(x.getContextHelp)
     }
   }
 

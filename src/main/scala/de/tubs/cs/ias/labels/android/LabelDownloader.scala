@@ -32,11 +32,15 @@ object LabelDownloader {
     if (response.is200) {
       JsonParser(response.body.split("\n")(2)) match {
         case JsArray(elements) =>
-          assert(elements.head.asInstanceOf[JsString].value == "wrb.fr")
-          assert(elements(1).asInstanceOf[JsString].value == "Ws7gDc") // this is the endpoint we specified
-          val data = JsonParser(elements(2).asInstanceOf[JsString].value)
-          AndroidPrivacyLabel.prettyPrint(
-            AndroidPrivacyLabel(data.asInstanceOf[JsArray]))
+          elements.head match {
+            case JsArray(elements) =>
+              assert (elements.head.asInstanceOf[JsString].value == "wrb.fr")
+              assert (elements (1).asInstanceOf[JsString].value == "Ws7gDc") // this is the endpoint we specified
+              val data = JsonParser (elements (2).asInstanceOf[JsString].value)
+              AndroidPrivacyLabel.prettyPrint (
+              AndroidPrivacyLabel (data.asInstanceOf[JsArray] ) )
+            case x => throw new RuntimeException(s"expected Json Array but got ${x.getClass.toString}")
+          }
         case x =>
           throw new RuntimeException(
             s"expected Json Array but got ${x.getClass.toString}")
