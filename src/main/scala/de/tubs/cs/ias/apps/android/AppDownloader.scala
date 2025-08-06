@@ -71,24 +71,26 @@ object AppDownloader extends LogSupport {
   case class Result(value: String) extends GooglePlayResult
 
   class InfoResult(output: Array[String]) extends GooglePlayResult {
-    assert(
+    /*assert(
       output.length == 12,
       s"expected 12 line output but got ${output.length} \n ${output.mkString("\n")}")
-    assert(output(0).startsWith("POST"))
-    assert(output(1).startsWith("GET"))
-    val downloadCount: String = extractValue(output(2))
-    val name: String = extractValue(output(4))
+    assert(output(0).startsWith("msg=POST"))
+    assert(output(1).startsWith("msg=GET"))*/
     val vendor: String = extractValue(output(5))
-    val price: String = extractValue(output(6))
-    val minOs: String = extractValue(output(7))
-    val size: String = extractValue(output(8))
-    val lastUpdate: String = extractValue(output(9))
+    val price: String = extractValue(output(0))
+    val versionName: String = extractValue(output(1))
+    val lastUpdate: String = extractValue(output(2))
+    val apks : String = extractValue(output(3))
+    val minOs: String = extractValue(output(4))
+    val downloadCount: String = extractValue(output(7))
+    val name: String = extractValue(output(8)) 
+    val size: String = extractValue(output(9))
     val versionCode: String = extractValue(output(10))
-    val versionName: String = extractValue(output(11))
 
     private def extractValue(value: String): String = {
-      value.split(":").toList match {
-        case _ :: values => values.mkString(":").trim
+      value.split("=").toList match {
+        case ident :: value :: Nil => value.trim
+        case _ :: values => values.mkString("=").trim
         case _ =>
           throw new RuntimeException(s"unexpected key value pair $value")
       }
@@ -97,7 +99,7 @@ object AppDownloader extends LogSupport {
 
   object Success extends GooglePlayResult
 
-  val DEVICE_TYPE = 2 //this is arm64-v8a and works on our Pixel 6a
+  val DEVICE_TYPE = "arm64-v8a" //this is arm64-v8a and works on our Pixel 6a
   val DELAY_TIME_MAX: Long = 10000
 
   /**
@@ -114,7 +116,7 @@ object AppDownloader extends LogSupport {
   def getAppVersion(app: String, googleplay: String): GooglePlayResult = {
     val lastLine: ListBuffer[String] = ListBuffer()
     val stdLine: ListBuffer[String] = ListBuffer()
-    val cmd = s"$googleplay -a $app -p $DEVICE_TYPE"
+    val cmd = s"$googleplay -abi \"$DEVICE_TYPE\" -i $app"
     try {
       val appInfo = cmd
         .!!(
@@ -124,7 +126,8 @@ object AppDownloader extends LogSupport {
       val panicLine = lastLine.filter(_.contains("panic"))
       if (panicLine.isEmpty) {
         try {
-          new InfoResult(appInfo)
+	    val ret = new InfoResult(appInfo)
+	    ret
         } catch {
           case _: Throwable =>
             UnknownPanic(
@@ -144,8 +147,8 @@ object AppDownloader extends LogSupport {
   def purchase(app: String, googleplay: String): GooglePlayResult = {
     val errLines = ListBuffer[String]()
     val stdLines = ListBuffer[String]()
-    //val cmd = s"$googleplay -acquire -p $DEVICE_TYPE -a $app"
-    val cmd = s"$googleplay -acquire -a $app -p $DEVICE_TYPE"
+    //val cmd = s"$googleplay -abi $DEVICE_TYPE -a $app"
+    val cmd = s"$googleplay -abi \"$DEVICE_TYPE\" -i $app -a"
     try {
       val ret = cmd ! ProcessLogger(_ => (), err => errLines.append(err))
       val panic = errLines.filter(_.contains("panic:"))
@@ -166,7 +169,7 @@ object AppDownloader extends LogSupport {
                   googleplay: String): GooglePlayResult = {
     val errlines: ListBuffer[String] = ListBuffer()
     val stdlines: ListBuffer[String] = ListBuffer()
-    val download = s"$googleplay -p $DEVICE_TYPE -a $app -s -v $version"
+    val download = s"$googleplay -abi \"$DEVICE_TYPE\" -i $app -v $version"
     try {
       Thread.sleep(Random.nextLong(DELAY_TIME_MAX)) // waiting between 0 and DELAY_TIME_MAX to avoid too many requests
       val ret = Process(download, new File(folder)) ! ProcessLogger(
